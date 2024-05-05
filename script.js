@@ -6,157 +6,85 @@ const totalChange = document.getElementById("total-change");
 const totalPrice = document.getElementById("total-price");
 
 
-// let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
-// let price = 3.26;
+let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
+let price = 3.26;
 
 // let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 // let price = 19.5;
 
 
-let cid = [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
-let price = 19.5;
+// let cid = [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
+// let price = 19.5;
 
 const currencyUnit = [["PENNY", 0.01], ["NICKEL", 0.05], ["DIME", 0.1], ["QUARTER", 0.25], ["DOLLAR", 1], ["FIVE", 5], ["TEN", 10], ["TWENTY", 20], ["ONE HUNDRED", 100]];
 
+let statusMsg = "";
+let display = "";
 let changeResult = "";
-let totalResult = [];
-let emptyCid = false;
-let closeDrawer = false;
+let result = {};
 
-let cashDrawer = [...cid]
+currencyUnit.forEach((value) => [value[0], Math.round(value[1] * 100)]);
 
-//DISPLAYING RESULTS
+const calculateCid = (change, cashDrawer, currencyValue) => {
+	for (let i = cashDrawer.length - 1; i >= 0; i--) { //iterate reverse the cid
+		if (change >= currencyValue[i][1] && cashDrawer[i][1] > 0) { //find a currency[i] equal or major to change and if cid[i] has that amount of money 
+			while (change >= currencyValue[i][1] && cashDrawer[i][1] >= currencyValue[i][1]) { //a bucle while to rest change and cid[i] the amount of the currency[i], until change will be major or equal to the currency[i] and 
+				change -= currencyValue[i][1];																				//cid[i] will be major or equal to currency[i]. 
+				cashDrawer[i][1] -= currencyValue[i][1];
+				setResult(currencyValue[i]); //call set result passing as argument the currencyValue[i] to set this.result obj
+			}
+			if (change > 0) { //if still have change, just call calculateCid() and pass change as argument (recursive)
+				calculateCid(change, cashDrawer, currencyValue);
+			}
+			return;	//avoid rest others currencies in cashDrawer
+		}
+	}
+};
 
-cid.forEach((elem) => cashInDraw.innerHTML += `<p class="currency-total">${elem[0]}: $${elem[1]}</p>`);
-totalPrice.innerText = `Total Price: $${price}`;
+const setResult = (arr) => { //add to result obj the name of currency[i][0] as key and currency[i][1] as the value, if the key already exist sum the value
+	let name = arr[0];
+	let value = arr[1];
 
-function formatNumber(number) {
-    let formattedNumber = Number(number).toFixed(2).replace(/\.?0*$/, '');
-    return formattedNumber;
+	if (result.hasOwnProperty(name)) {
+		result[name] += value;
+	} else {
+		result[name] = value;
+	}
+};
+
+const setDisplayMessage = (resultObj) => {
+	for (let value in resultObj) {
+		display += `${value}: $${resultObj[value] / 100} ` //divive here to avoid float point
+	}
+};
+
+const setDisplay = () => {
+	output.innerText = `Status: ${statusMsg} ${statusMsg !== "INSUFFICIENT_FUNDS" ? display : ""}`
 }
-
-const displayTotalPriceAndChange = () => {
-    totalChange.innerText = `Total Change: $${(cash.value - price).toFixed(2)}`
-};
-
-const updateCid = (cid) => {
-    const cidTotal = document.querySelectorAll(".currency-total")
-
-    for (let i = 0; i < cidTotal.length; i++) {
-        cidTotal[i].innerText = `${cid[i][0]}: $${cid[i][1].toFixed(2)}`
-    }
-
-};
-
-const displayResult = (string) => {
-    output.innerHTML = `<p id="status">Status: ${closeDrawer ? "CLOSED" : "OPEN"} ${string}</p>` //ej "TWENTY $60 TEN $30"
-};
-
-const displayResultConcat = (currency, value) => {
-    changeResult += `${currency}: $${(value).toFixed(2)} `
-};
-
-const cleanDuplicates = (array) => {
-    let valueTracker = {};
-
-    array.forEach((item) => {
-        let name = item[0];
-        let value = item[1];
-
-        if (valueTracker.hasOwnProperty(name)) {
-            valueTracker[name] += value;
-        } else {
-            valueTracker[name] = value;
-        }
-    });
-
-    let resultArray = [];
-    for (let name in valueTracker) {
-        resultArray.push([name, valueTracker[name]]);
-    }
-    return resultArray;
-}
-
-const displayResultArrayMaker = (array) => {
-
-    let cleanArray = cleanDuplicates(array)
-
-    cleanArray.forEach((elem) => {
-        displayResultConcat(elem[0], elem[1])
-    })
-};
-
-//CASH IN DRAW FUNCTIONS
-
-
- const restCid = () => {
-
- }
-
-const calculateCid = (remainingChange, cidConverted, currencyConverted) => {
-//crear una copia de cid con los valores convertidos a centavos (multplicados por 100) para luego divirlos en 100
-
-    for (let i = cidConverted.length - 1; i >= 0; i--) {
-        if (remainingChange >= currencyConverted[i][1] && cidConverted[i][1] > 0) {
-            while (remainingChange >= currencyConverted[i][1] && cidConverted[i][1] >= currencyConverted[i][1]) {
-                remainingChange -= currencyConverted[i][1];
-                cidConverted[i][1] -= currencyConverted[i][1];
-                totalResult.push([cidConverted[i][0], currencyConverted[i][1] / 100])
-            }
-
-           // console.log(totalCidCash, "totalCidCash");
-            console.log(remainingChange, "remainingChange");
-
-            if (remainingChange > 0) {
-                calculateCid(remainingChange, cidConverted, currencyConverted);
-            }
- let totalCidCash = cidConverted.reduce((acc, elem) => acc + elem[1], 0);
-        //     console.log(cid, "cash in raw");
-            for(let i = 0; i < cashDrawer.length; i++){ //update cid to display
-                cashDrawer[i][1] = cidConverted[i][1] / 100
-            }
-
-            if(totalCidCash == 0 && remainingChange == 0){
-                closeDrawer = true;
-            }
-            
-             if(remainingChange > 0 && totalCidCash == 0){
-                 emptyCid = true;
-             }
-           return;
-        }
-    }
-};
-
 
 purchaseBtn.addEventListener("click", () => {
+let totalCid = cid.reduce((acc, elem) => acc + elem[1], 0);
+let cashDrawer = cid.map((value) => [value[0], Math.round(value[1] * 100)]);
+let currencyValue = currencyUnit.map((value) => [value[0], Math.round(value[1] * 100)]);
 
-    let change = parseInt(cash.value) - price;
+let change = cash.value - price;
 
-    let cidConverted = cid.map((value) => [value[0], Math.round(value[1] * 100)]);
-    let currencyConverted = currencyUnit.map((value) => [value[0], Math.round(value[1] * 100)]);
-    let remainingChange = Math.round(change * 100); 
+	calculateCid(change * 100, cashDrawer, currencyValue);
+	if (cash.value < price) {
+		alert("Customer does not have enough money to purchase the item");
+	}
+	if (cash.value == price) {
+		output.innerText = "No change due - customer paid with exact cash";
+		return;
+	}
 
-    if (cash.value < price) {
-        output.innerText = "Status: INSUFFICIENT_FUNDS"
-        alert("Customer does not have enough money to purchase the item");
-        return;
-    };
-
-    if (cash.value == price) {
-        output.innerText = "No change due - customer paid with exact cash"
-        alert("No change due - customer paid with exact cash");
-        return;
-    };
-    
-    calculateCid(remainingChange, cidConverted, currencyConverted);
-    updateCid(cashDrawer);
-    if (emptyCid) {
-        output.innerText = "Status: INSUFFICIENT_FUNDS"
-        return;
-    } else {
-        displayResultArrayMaker(totalResult);
-        displayResult(changeResult);
-        displayTotalPriceAndChange();
-    }
+	if (change == totalCid) {
+		statusMsg = "CLOSED";
+	} else if (change > totalCid) {
+		statusMsg = "INSUFFICIENT_FUNDS";
+	} else {
+		statusMsg = "OPEN";
+	}
+	setDisplayMessage(result);
+	setDisplay();
 })
