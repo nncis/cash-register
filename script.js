@@ -1,15 +1,15 @@
-cash = document.getElementById("cash"); //input
+const cash = document.getElementById("cash"); //input
 const output = document.getElementById("change-due");
 const purchaseBtn = document.getElementById("purchase-btn");
 const cashInDraw = document.getElementById("cid");
 const totalChange = document.getElementById("total-change");
 const totalPrice = document.getElementById("total-price");
 
-let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
-let price = 19.5;
+// let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
+// let price = 19.5;
 
-//  let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
-//  let price = 3.26;
+ let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
+ let price = 3.26;
 
 // let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 // let price = 19.5;
@@ -38,7 +38,7 @@ const calculateCid = (change, cashDrawer, currencyValue) => {
 				cashDrawer[i][1] -= currencyValue[i][1];
 				setResult(currencyValue[i]); //call set result passing as argument the currencyValue[i] to set this.result obj
 			}
-			if (change > 0) { //if still have change, just call calculateCid() and pass change as argument (recursive)
+			if (change > 0) {                                            //if still have change, just call calculateCid() and pass change as argument (recursive)
 				console.log(cashDrawer[i]);
 				if(cashDrawer[0][1] == 0 && change > 0){
 					insufficientFound = true;
