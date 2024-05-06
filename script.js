@@ -1,33 +1,33 @@
-const cash = document.getElementById("cash"); //input
+cash = document.getElementById("cash"); //input
 const output = document.getElementById("change-due");
 const purchaseBtn = document.getElementById("purchase-btn");
 const cashInDraw = document.getElementById("cid");
 const totalChange = document.getElementById("total-change");
 const totalPrice = document.getElementById("total-price");
 
-
-// let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
-// let price = 3.26;
-
 let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 let price = 19.5;
+
+//  let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
+//  let price = 3.26;
 
 // let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 // let price = 19.5;
 
 
-// let cid = [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
-// let price = 19.5;
+//let cid = [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
+//let price = 19.5;
 
-const currencyUnit = [["PENNY", 0.01], ["NICKEL", 0.05], ["DIME", 0.1], ["QUARTER", 0.25], ["DOLLAR", 1], ["FIVE", 5], ["TEN", 10], ["TWENTY", 20], ["ONE HUNDRED", 100]];
+const currencyUnit = [["PENNY", 0.01], ["NICKEL", 0.05], ["DIME", 0.1], ["QUARTER", 0.25], ["ONE", 1], ["FIVE", 5], ["TEN", 10], ["TWENTY", 20], ["ONE HUNDRED", 100]];
 
 let statusMsg = "";
 let display = "";
 let changeResult = "";
 let result = {};
+let insufficientFound = false;
 
-let insufficientFounds = false;
 
+cid.forEach((value) => [value[0], Math.round(value[1] * 100)]);
 currencyUnit.forEach((value) => [value[0], Math.round(value[1] * 100)]);
 
 const calculateCid = (change, cashDrawer, currencyValue) => {
@@ -39,18 +39,13 @@ const calculateCid = (change, cashDrawer, currencyValue) => {
 				setResult(currencyValue[i]); //call set result passing as argument the currencyValue[i] to set this.result obj
 			}
 			if (change > 0) { //if still have change, just call calculateCid() and pass change as argument (recursive)
-				calculateCid(change, cashDrawer, currencyValue);
+				console.log(cashDrawer[i]);
+				if(cashDrawer[0][1] == 0 && change > 0){
+					insufficientFound = true;
+				}else if (change > 0) {
+					calculateCid(change, cashDrawer, currencyValue);					
+				}
 			}
-
-            console.log(change, "change"); //if still have change it's because cid[i] it's minor than currency[i]
-            console.log(cashDrawer[i], "cid");
-            // console.log(currencyValue[i], "currency");
-        
-            if(cashDrawer[i][1] < currencyValue[i][1] && change > currencyValue[i][1]){
-           
-                insufficientFounds = true
-            }
-
 			return;	//avoid rest others currencies in cashDrawer
 		}
 	}
@@ -78,16 +73,13 @@ const setDisplay = () => {
 }
 
 purchaseBtn.addEventListener("click", () => {
+	let totalCid = cid.reduce((acc, elem) => acc + elem[1], 0);
+	let cashDrawer = cid.map((value) => [value[0], Math.round(value[1] * 100)]);
+	let currencyValue = currencyUnit.map((value) => [value[0], Math.round(value[1] * 100)]);
 
-let totalCid = cid.reduce((acc, elem) => acc + elem[1], 0);
-let cashDrawer = cid.map((value) => [value[0], Math.round(value[1] * 100)]);
-let currencyValue = currencyUnit.map((value) => [value[0], Math.round(value[1] * 100)]);
+	let change = cash.value - price;
 
-console.log(totalCid);
-let change = cash.value - price;
-let changeConverted = Math.round(change * 100)
-
-	calculateCid(changeConverted, cashDrawer, currencyValue);
+	calculateCid(change * 100, cashDrawer, currencyValue);
 	if (cash.value < price) {
 		alert("Customer does not have enough money to purchase the item");
 	}
@@ -98,7 +90,7 @@ let changeConverted = Math.round(change * 100)
 
 	if (change == totalCid) {
 		statusMsg = "CLOSED";
-	} else if (change > totalCid || insufficientFounds) {
+	} else if (change > totalCid || insufficientFound) {
 		statusMsg = "INSUFFICIENT_FUNDS";
 	} else {
 		statusMsg = "OPEN";
