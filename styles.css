@@ -17,6 +17,7 @@ html {
 
 body {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -26,4 +27,12 @@ body {
 .main-container {
     position: relative;
     top: 50px;
+}
+
+.canvas {
+    background-color: bisque;
+}
+
+img {
+    display: none;
 }
