@@ -27,12 +27,5 @@ body {
 .main-container {
     position: relative;
     top: 50px;
-}
-
-.canvas {
-    background-color: bisque;
-}
-
-img {
-    display: none;
+    font-size: 2rem;
 }

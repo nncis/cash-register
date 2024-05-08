@@ -8,8 +8,8 @@ const totalPrice = document.getElementById("total-price");
 // let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 // let price = 19.5;
 
- let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]; 
- let price = 3.26;
+let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]];
+let price = 3.26;
 
 // let cid = [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
 // let price = 19.5;
@@ -26,9 +26,16 @@ let changeResult = "";
 let result = {};
 let insufficientFound = false;
 
+cid.forEach((elem) => cashInDraw.innerHTML += `<p class="cid-values">${elem[0]}: $${elem[1]}</p>`) //show cid
+totalPrice.innerText = `Total Price: $${price}`
 
-cid.forEach((value) => [value[0], Math.round(value[1] * 100)]);
-currencyUnit.forEach((value) => [value[0], Math.round(value[1] * 100)]);
+
+const updateCid = (cid) => {
+	let values = document.querySelectorAll(".cid-values");
+	for (let i = 0; i < values.length; i++) {
+		values[i].innerText = `${cid[i][0]}: $${cid[i][1]}`
+	}
+}
 
 const calculateCid = (change, cashDrawer, currencyValue) => {
 	for (let i = cashDrawer.length - 1; i >= 0; i--) { //iterate reverse the cid
@@ -39,12 +46,12 @@ const calculateCid = (change, cashDrawer, currencyValue) => {
 				setResult(currencyValue[i]); //call set result passing as argument the currencyValue[i] to set this.result obj
 			}
 			if (change > 0) {                                            //if still have change, just call calculateCid() and pass change as argument (recursive)
-				console.log(cashDrawer[i]);
-				if(cashDrawer[0][1] == 0 && change > 0){
+				if (cashDrawer[0][1] == 0 && change > 0) {
 					insufficientFound = true;
-				}else if (change > 0) {
-					calculateCid(change, cashDrawer, currencyValue);					
+				} else if (change > 0) {
+					calculateCid(change, cashDrawer, currencyValue);
 				}
+				cid[i][1] = cashDrawer[i][1] / 100 //update cid
 			}
 			return;	//avoid rest others currencies in cashDrawer
 		}
@@ -63,13 +70,18 @@ const setResult = (arr) => { //add to result obj the name of currency[i][0] as k
 };
 
 const setDisplayMessage = (resultObj) => {
-	for (let value in resultObj) {
-		display += `${value}: $${resultObj[value] / 100} ` //divive here to avoid float point
-	}
+	Object.keys(resultObj).forEach(key => {
+		const p = document.createElement("p");
+		p.innerHTML = `${key}: $${resultObj[key] / 100}`
+		output.appendChild(p)
+	})
 };
 
-const setDisplay = () => {
-	output.innerText = `Status: ${statusMsg} ${statusMsg !== "INSUFFICIENT_FUNDS" ? display : ""}`
+const setDisplayStatus = () => {
+	// output.innerHTML = `<p>Status: ${statusMsg} ${statusMsg !== "INSUFFICIENT_FUNDS" ? display : ""}</p>`
+	const p = document.createElement("p");
+	p.innerHTML = `Status: ${statusMsg}`
+	output.appendChild(p)
 }
 
 purchaseBtn.addEventListener("click", () => {
@@ -79,7 +91,10 @@ purchaseBtn.addEventListener("click", () => {
 
 	let change = cash.value - price;
 
+	totalChange.innerText = `Total Change: $${change}`
+
 	calculateCid(change * 100, cashDrawer, currencyValue);
+	updateCid(cid)
 	if (cash.value < price) {
 		alert("Customer does not have enough money to purchase the item");
 	}
@@ -95,6 +110,10 @@ purchaseBtn.addEventListener("click", () => {
 	} else {
 		statusMsg = "OPEN";
 	}
-	setDisplayMessage(result);
-	setDisplay();
+
+	setDisplayStatus();
+
+	if (statusMsg !== "INSUFFICIENT_FUNDS") {
+		setDisplayMessage(result);
+	}
 })
