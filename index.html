@@ -1,20 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cash Register</title>
-    <link rel="stylesheet" href="./styles.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cash Register</title>
+	<link rel="stylesheet" href="./styles.css">
+	<link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
 </head>
+
 <body>
-    <main class="main-container"> 
-            <p id="total-price"></p>
-            <p id="total-change"></p>
-            <div id="change-due"></div>
-            <input id="cash" type="number">
-            <button id="purchase-btn">Purchase</button>
-            <div id="cid"></div>
-    </main>
-    <script src="./script.js"></script>
+	<main class="main-container">
+		<div class="pop-up-display">
+			<div class="screen-display">
+				<p id="total-price"></p>
+				<p id="total-change"></p>
+			</div>
+		</div>
+		<div class="display-support"></div>
+		<div class="body">
+			<div class="main-screen">
+				<div id="change-due"></div>
+				<div id="change-output"></div>
+			</div>
+			<div class="table">
+				<input id="cash" readonly>
+				<button id="delete-btn">DEL</button>
+				<div class="num-pad">
+					<button>1</button>
+					<button>2</button>
+					<button>3</button>
+					<button>4</button>
+					<button>5</button>
+					<button>6</button>
+					<button>7</button>
+					<button>8</button>
+					<button>9</button>
+					<button>.</button>
+					<button>0</button>
+				</div>
+				<button id="purchase-btn">Purchase</button>
+			</div>
+			<div class="cid-screen">
+				<h4 class="cid-title">Cash In Drawer</h4>
+				<div id="cid"></div>
+			</div>
+		</div>
+		<div class="cash-register-bottom">
+			<div class="cash-drawer">
+				<div class="key-slot"><span></span></div>
+			</div>
+		</div>
+	</main>
+	<script src="./script.js"></script>
 </body>
+
 </html>
